@@ -70,3 +70,19 @@ EXPOSE 8080
 CMD /usr/local/apache-tomcat-9.0.22/bin/startup.sh && tail -F /usr/local/apache-tomcat-9.0.22/bin/logs/catalina.out
 ```
 
+```
+FROM centos:7
+#作者
+MAINTAINER panlf
+
+#ADD 把java添加到容器中指定位置
+ADD jdk-8u351-linux-x64.tar.gz /usr/local/java
+
+RUN ln -snf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' > /etc/timezone
+
+#环境配置
+ENV JAVA_HOME /usr/local/java/jdk1.8.0_351
+ENV JRE_HOME $JAVA_HOME/jre
+ENV CLASSPATH=:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar:$JRE_HOME/lib
+ENV PATH=$PATH:$JAVA_HOME/bin:$JRE_HOME/bin
+```
