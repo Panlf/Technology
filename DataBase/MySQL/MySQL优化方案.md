@@ -127,3 +127,69 @@ right join 右表驱动左表
 inner join 数据量小的作为驱动表
 ```
 
+### 不使用子查询
+
+```
+SELECT FROM t1 WHERE id (SELECT id FROM t2 WHERE name='hechunyang');
+```
+
+子查询在`MySQL5.5`版本里，内部执行计划器是这样执行的：先查外表再匹配内表，而不是先查内表 t2，当外表的数据很大时，查询速度会非常慢。
+
+在`MariaDB10/MySQL5.6`版本里，采用`join`关联方式对其进行了优化，这条SQL会自动转换为 `SELECT t1. FROM t1 JOIN t2 ON t1.id = t2.id;`
+
+但请注意的是：优化只针对`SELECT`有效，对 `UPDATE/DELETE`子查询无效，生产环境尽量应避免使用子查询。
+
+### 避免函数索引
+```
+SELECT FROM t WHERE YEAR(d) >= 2016;
+```
+
+由于`MySQL`不像`Oracle`那样⽀持函数索引，即使 d 字段有索引，也会直接全表扫描。
+
+应改为
+```
+SELECT FROM t WHERE d >= '2016-01-01';
+```
+
+### 用 IN 来替换 OR 低效查询
+
+慢
+```
+SELECT FROM t WHERE LOC_ID = 10 OR LOC_ID = 20 OR LOC_ID = 30;
+```
+
+高效查询
+```
+SELECT FROM t WHERE LOC_IN IN (10,20,30);
+```
+
+### LIKE 双百分号无法使用到索引
+```
+SELECT FROM t WHERE name LIKE '%de%';
+```
+
+使用
+```
+SELECT FROM t WHERE name LIKE 'de%';
+```
+
+### 分组统计可以禁止排序
+```
+SELECT goods_id,count() FROM t GROUP BY goods_id;
+```
+默认情况下，`MySQL`对所有`GROUP BY col1，col2… `的字段进⾏排序。如果查询包括`GROUP BY`，想要避免排序结果的消耗，则可以指定`ORDER BY NULL`禁止排序。
+
+使用
+```
+SELECT goods_id,count () FROM t GROUP BY goods_id ORDER BY NULL;
+```
+
+### 禁止不必要的 ORDER BY 排序
+```
+SELECT count(1) FROM user u LEFT JOIN user_info i ON u.id = i.user_id WHERE 1 = 1 ORDER BY u.create_time DESC;
+```
+
+使用
+```
+SELECT count (1) FROM user u LEFT JOIN user_info i ON u.id = i.user_id;
+```
