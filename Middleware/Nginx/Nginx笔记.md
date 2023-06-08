@@ -34,3 +34,29 @@ worker_connections 50000;
 ### Nginx处理Http请求
 
 请求报文 --> 逐行解析：请求行 --> 逐行解析：请求头 --> 处理请求（1、匹配虚拟主机 2、location 匹配路径 3、记录日志 access.log） --> 数据压缩 gzip --> 响应报文
+
+## Nginx命令
+
+```
+nginx -t # 检测nginx.conf语法
+nginx -s reload # 重新读取nginx.conf
+nginx -s stop # 停止nginx  kill -15 nginx
+
+nginx # 默认是直接运行 前提是当前机器没运行nginx
+
+```
+
+`nginx -s reload`是给master进程发信号，重新读取配置信息，导致worker重新生成，因此worker-pid发生了变化。但是master进程id不带变化的。
+
+
+```
+# 现在可以用systemctl去管理nginx了
+
+systemctl start nginx
+
+systemctl status nginx
+
+systemctl reload nginx  # worker变化 master不变
+
+systemctl restart nginx # 整个nginx进程变化
+```
