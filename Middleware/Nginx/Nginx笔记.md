@@ -60,3 +60,97 @@ systemctl reload nginx  # worker变化 master不变
 
 systemctl restart nginx # 整个nginx进程变化
 ```
+
+## Nginx配置文件
+
+```
+http{} 允许内部嵌套多个server{}
+
+server{} 内部允许有多个location{}
+
+
+http{} 标签用于解决用户的请求与响应整体功能
+
+server {} 用于响应具体一个网站（域名）
+
+location {} 用于匹配网站具体的URL路径
+```
+
+## Nginx虚拟主机
+
+### 单虚拟主机
+
+只需要在http{}区域中，设置一个server{}标签即可。
+
+```
+
+server {
+    listen 80;
+    server_name ip/域名;
+    charset utf-8;
+    location / {
+        root /../../;
+        index index.html;
+    }
+
+}
+
+```
+
+`etc/nginx/mime.types`只有这个文件中定义的文件类型，Nginx会进行解析，其他文件类型Nginx默认会下载。
+
+### 多IP虚拟主机
+
+Linux操作系统都能够支持给网卡绑定多个IP，可以使得一块网卡上运行多个基于IP的虚拟主机
+
+```
+# 临时添加一个IP
+
+ip addr add 10.0.0.88/24 dev eth0
+
+
+# 查看
+ip addr show eth0
+```
+
+配置Nginx
+```
+server {
+    listen 10.0.0.88:80;
+    server_name _;
+
+    location / {
+
+        root /data/80/;
+        index index.html;
+    }
+
+}
+```
+
+### 多端口的虚拟主机
+
+```
+server {
+    listen 10.0.0.88:80;
+    server_name _;
+
+    location / {
+
+        root /data/80/;
+        index index.html;
+    }
+}
+
+server {
+    listen 10.0.0.88:81;
+    server_name _;
+
+    location / {
+
+        root /data/81/;
+        index index.html;
+    }
+}
+
+```
