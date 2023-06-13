@@ -39,11 +39,13 @@ worker_connections 50000;
 
 ```
 nginx -t # 检测nginx.conf语法
+# stop quit reopen reload
 nginx -s reload # 重新读取nginx.conf
-nginx -s stop # 停止nginx  kill -15 nginx
+nginx -s stop # 停止nginx  kill -15 nginx 
 
 nginx # 默认是直接运行 前提是当前机器没运行nginx
 
+nginx -c nginx.conf的路径 # 指定用哪个配置文件
 ```
 
 `nginx -s reload`是给master进程发信号，重新读取配置信息，导致worker重新生成，因此worker-pid发生了变化。但是master进程id不带变化的。
@@ -154,3 +156,117 @@ server {
 }
 
 ```
+
+## Nginx核心功能
+
+```
+user www;
+
+http {
+   数据传输性能相关的参数 
+
+   includ /etc/nginx/conf.d/*.conf;
+} 定义全局的一些关于http请求响应处理的参数
+
+server {}  区域中主要定义 单个的网站的处理  
+
+    网站的根目录，静态数据存放的地方
+
+server {
+    端口
+    域名
+    URL处理
+} 网站1
+
+server {} 网站2
+
+server {} 网站3
+
+
+```
+
+## Nginx日志
+
+### 日志格式
+
+```
+log_format main '$remote_addr - $remote_user [$time_local] "$request"'
+                '$status $body_bytes_sent "$http_referer" '
+                '"$http_user_agent" "$http_x_forwarder_for"';
+
+
+access_log logs/access.log main;
+
+参数解释
+$remote_addr 记录访问网站的客户端IP地址
+$remote_user 记录远程客户端用户名称
+$time_local 记录访问时间与时区
+$request 记录用户的http请求起始行信息（请求方法、http协议）
+$status 记录http状态码，即请求返回的状态 ，例如200、404、502等
+$body_bytes_sent 记录服务器发送给客户端的响应body字节数
+$http_referer 记录此次请求是从哪个链接访问过来的，可以根据referer进行防盗链设置
+$http_user_agent 记录客户端访问信息，如浏览器、手机客户端等
+$http_x_forwarder_for 当前端有代理服务器时，设置Web节点记录客户端地址的配置，
+    此参数生效的前提是代理服务器上也进行相关的x_forwarded_for设置
+
+备注：
+    $remote_addr 可能拿到是反向代理IP地址
+    $http_x_forwarder_for  可以获取客户端真实IP地址
+    
+    更多变量
+    https://nginx.org/en/docs/
+
+
+    log_format ; 设定日志的格式
+    access_log ; 设定是否开启日志，日志存储路径   可以写在 http {}  或者 server {}
+
+    http {
+        log_format ; 设定日志的格式
+        access_log ; 设定是否开启日志，日志存储路径
+
+    }
+
+    http {
+        server {
+            # log_format ; 设定日志的格式 不允许写在这里
+            access_log ; 设定是否开启日志，日志存储路径
+        }
+
+    }
+```
+
+### 关闭日志
+
+```
+#access_log logs/access.log main;
+access_log off;
+```
+
+### 错误日志
+
+语法
+
+```
+error_log file level;
+
+日志级别 debug|info|notice|warn|error|crit|alert|emerg
+
+级别越高，日志记录越少，生产常用模式是warn|error|crit级别
+
+日志记录，会给服务器增加大量的IO消耗，按需修改
+
+
+error_log /var/log/log-error.log error;
+```
+
+## 错误页面
+
+语法
+
+```
+#error_page 响应状态码  相对路径的html文件 / url
+
+error_page 404 /404.html
+error_page 500 502 503 504 /50x.html
+```
+
