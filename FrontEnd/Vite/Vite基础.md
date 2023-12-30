@@ -159,6 +159,8 @@ cd [项目名]
 pnpm install
 pnpm run dev
 ```
+
+setting.json
 ```json
 
 {
@@ -244,6 +246,8 @@ pnpm run dev
   "prettier.semi": true
 }
 ```
+
+vite.config.js
 ```javascript
 
 import { defineConfig } from "vite";
@@ -262,6 +266,8 @@ export default defineConfig({
   ...
 });
 ```
+
+jsconfig.json
 ```json
 
 {
