@@ -49,6 +49,7 @@ ActorRef对原生的Actor实例做了良好的封装（也可以理解为一种�
 
 每个Actor在被创建后都拥有自己的路径，该路径遵循ActorSystem的层级结构。如果是远程Actor，则需要给出IP和端口。通过路径，我们可以很方便地查找到一个Actor。
 
+### Actor基本使用
 
 
 
