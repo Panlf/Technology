@@ -95,3 +95,14 @@ GOMAXPROCS设置P的数量，最多有GOMAXPROCS个线程分布在多个CPU上�
 - 每个M都会有一个自己的G0
 - 在调度或系统调用时会使用M会切换到G0来调度
 - M0的G0会放在全局空间
+
+## 通过Debug trace 查看GPM信息
+- GODEBUG=schedtrace=1000 ./可执行文件
+- SCHED：调试的信息
+- 0ms：从程序启动到输出经历的时间
+- gomaxprocs：P的数量，一般默认是和CPU的核心数一致的
+- idleprocs：处理idle状态的P的数量，gomaxprocs-idleprocs=目前正在执行的P的数量
+- spinningthreads：处于自旋状态的thread数量
+- idlethread：处理idle状态的thread
+- runqueue：全局G队列中的G数量
+- [0,0]：每个P的local queue本地队列中，目前存在G的数量
