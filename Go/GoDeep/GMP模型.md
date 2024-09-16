@@ -1,4 +1,6 @@
-# GPM模型
+# GMP模型
+
+GMP = foroutine + machine + processor (+ 一套有机组合的机制)
 
 - G：goroutine协程
 - P：processor处理器
@@ -96,7 +98,7 @@ GOMAXPROCS设置P的数量，最多有GOMAXPROCS个线程分布在多个CPU上�
 - 在调度或系统调用时会使用M会切换到G0来调度
 - M0的G0会放在全局空间
 
-## 通过Debug trace 查看GPM信息
+## 通过Debug trace 查看GMP信息
 - GODEBUG=schedtrace=1000 ./可执行文件
 - SCHED：调试的信息
 - 0ms：从程序启动到输出经历的时间
